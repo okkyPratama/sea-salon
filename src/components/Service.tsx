@@ -1,3 +1,45 @@
+type ServiceProps = {
+  title: string;
+  image: string;
+  alt: string;
+};
+
+const services = [
+  {
+    title: "Haircuts and Styling",
+    image: "/src/assets/haircut-styling.png",
+    alt: "icon",
+  },
+  {
+    title: "Manicure and Pedicure",
+    image: "/src/assets/manicure-pedicure.png",
+    alt: "icon",
+  },
+  {
+    title: "Facial Treatment",
+    image: "/src/assets/facial-treatment.png",
+    alt: "icon",
+  },
+];
+
+const ServiceCard: React.FC<ServiceProps> = ({ title, image, alt }) => (
+  <div className="border rounded-md p-6 ">
+    <div className="mt-6">
+      <img src={image} alt={alt} className="w-full  object-cover" />
+    </div>
+    <div className="mt-6">
+      <h4 className="text-gray-800 text-xl font-semibold mb-2">{title}</h4>
+      <button
+        type="button"
+        className="w-full mt-6 px-5 py-2.5 text-sm text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 shadow-cyan-500/50 rounded-md"
+        aria-label={`Book ${title}`}
+      >
+        Book Now
+      </button>
+    </div>
+  </div>
+);
+
 export default function Service() {
   return (
     <section className=" mb-2">
@@ -9,70 +51,9 @@ export default function Service() {
         </div>
 
         <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-6 mt-4 max-sm:max-w-sm max-sm:mx-auto">
-          <div className="border rounded-md p-6">
-            <div className="mt-6">
-              <img src="/src/assets/haircut-styling.png" alt="Icon" />
-            </div>
-
-            <div className="mt-6">
-              <h4 className="text-gray-800 text-xl font-semibold mb-2">
-                Haircuts and Styling
-              </h4>
-              <p className="text-sm text-gray-500">
-                Everything you get in this plan
-              </p>
-
-              <button
-                type="button"
-                className="w-full mt-6 px-5 py-2.5 text-sm text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 shadow-cyan-500/50 rounded-md"
-              >
-                Book Now
-              </button>
-            </div>
-          </div>
-
-          <div className="border rounded-md p-6">
-            <div className="mt-6">
-              <img src="/src/assets/manicure-pedicure.png" alt="Icon" />
-            </div>
-
-            <div className="mt-6">
-              <h4 className="text-gray-800 text-xl font-semibold mb-2">
-                Manicure and Pedicure
-              </h4>
-              <p className="text-sm text-gray-500">
-                Everything you get in this plan
-              </p>
-
-              <button
-                type="button"
-                className="w-full mt-6 px-5 py-2.5 text-sm text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 shadow-cyan-500/50 rounded-md"
-              >
-                Book Now
-              </button>
-            </div>
-          </div>
-
-          <div className="border rounded-md p-6">
-            <div className="mt-6">
-              <img src="/src/assets/facial-treatment.png" alt="Icon" />
-            </div>
-
-            <div className="mt-6">
-              <h4 className="text-gray-800 text-xl font-semibold mb-2">
-                Facial Treatment
-              </h4>
-              <p className="text-sm text-gray-500">
-                Everything you get in this plan
-              </p>
-              <button
-                type="button"
-                className="w-full mt-6 px-5 py-2.5 text-sm text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 shadow-cyan-500/50 rounded-md"
-              >
-                Book Now
-              </button>
-            </div>
-          </div>
+          {services.map((service, index) => (
+            <ServiceCard key={index} {...service} />
+          ))}
         </div>
       </div>
     </section>
