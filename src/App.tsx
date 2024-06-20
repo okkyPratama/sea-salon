@@ -1,16 +1,18 @@
-import './App.css'
-import Footer from './components/Footer'
-import Navbar from './components/Navbar'
+import "./App.css";
+import Footer from "./components/Footer";
+import Hero from "./components/Hero";
+import Navbar from "./components/Navbar";
+import Service from "./components/Service";
 
 function App() {
-
   return (
     <>
       <Navbar />
-      <section className='h-max p-9'>Test 123</section>
+      <Hero />
+      <Service/>
       <Footer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

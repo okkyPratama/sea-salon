@@ -1,4 +1,4 @@
-function Footer() {
+export default function Footer() {
   return (
     <footer className=" bg-sky-950 pt-6">
       <div className="mx-auto w-full max-w-[1166px] px-4 xl:px-0">
@@ -162,4 +162,3 @@ function Footer() {
     </footer>
   );
 }
-export default Footer;
