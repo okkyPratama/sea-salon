@@ -55,9 +55,11 @@ export default function Review(): React.ReactElement {
   return (
     <section className="bg-gray-100 py-12">
       <div className="max-w-5xl mx-auto px-4">
-        <h2 className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 inline-block text-transparent bg-clip-text">
-          Customer Reviews
-        </h2>
+        <div className="flex justify-center">
+          <h2 className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 inline-block text-transparent bg-clip-text">
+            Customer Reviews
+          </h2>
+        </div>
 
         {/* Review form */}
         <form
