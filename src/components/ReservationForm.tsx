@@ -1,4 +1,6 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
+import Alert from "./Alert";
 
 interface ReservationFormProps {
   onClose: () => void;
@@ -8,16 +10,11 @@ interface ReservationFormProps {
 const validateDateTime = (dateTime: string): string | null => {
     const date = new Date(dateTime);
     const hours = date.getHours();
-    const minutes = date.getMinutes();
   
     if (hours < 9 || hours >= 21) {
       return "Booking time must be between 9:00 AM and 9:00 PM";
     }
-  
-    if (minutes !== 0) {
-      return "Minutes must be added!";
-    }
-  
+
     return null;
   };
 
@@ -53,7 +50,13 @@ const ReservationForm: React.FC<ReservationFormProps> = ({onClose,defaultService
           }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [alertInfo, setAlertInfo] = useState<{type: 'danger' | 'success'; message: string} | null>(null);
+    const handleCloseAlert = () => {
+        setAlertInfo(null);
+    }
+    
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const dateTimeError = validateDateTime(formData.dateTime);
         if (dateTimeError) {
@@ -62,9 +65,28 @@ const ReservationForm: React.FC<ReservationFormProps> = ({onClose,defaultService
             dateTime: dateTimeError
           }));
           return;
+          setIsLoading(true);
         }
-        console.log('Form submitted', formData);
-        onClose();
+
+        try {
+            const response = await axios.post('http://localhost:5000/bookings', {
+                name: formData.name,
+                phone_number: formData.phoneNumber,
+                service: formData.service,
+                date_time: formData.dateTime
+            });
+            console.log('Booking submitted successfully', response.data)
+            setAlertInfo({ type: 'success', message: 'Booking submitted successfully!' });
+            setTimeout(() => {
+                onClose();
+            }, 2000)
+        } catch (error) {
+            console.error("Error submitting booking:",error);
+
+            setAlertInfo({ type: 'danger', message: 'Failed to submit booking. Please try again.' });
+        } finally {
+            setIsLoading(false);
+        }
       };
 
 
@@ -72,6 +94,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({onClose,defaultService
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
             <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
                 <h2 className="text-2xl font-bold mb-4">Make a Reservation</h2>
+                {alertInfo && <Alert type={alertInfo.type} message={alertInfo.message} onClose={handleCloseAlert}/>}
                  <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Name</label>
@@ -131,19 +154,20 @@ const ReservationForm: React.FC<ReservationFormProps> = ({onClose,defaultService
                     </div>
                     <div className="flex items-center justify-between">
                         <button
-                          type="submit"
-                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"  
-                        >
-                          Book Now  
-                        </button>
-                        <button
                             type="button"
                             onClick={onClose}
                             className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                         >
                           Cancel
                         </button>    
+                        <button
+                          type="submit"
+                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"  
+                        >
+                           {isLoading ? 'Submitting...' : 'Book Now'}
+                        </button>
                     </div>
+                    {errors.submit && <p className="text-red-500 text-xs italic mt-2">{errors.submit}</p>}
                  </form>    
             </div>
         </div>

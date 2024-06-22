@@ -1,18 +1,35 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import axios from "axios";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import Alert from "./Alert";
 
 interface Review {
-  customerName: string;
-  starRating: number;
+  id?:number;
+  customer_name: string;
+  rating: number;
   comment: string;
 }
 
 export default function Review(): React.ReactElement {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newReview, setNewReview] = useState<Review>({
-    customerName: "",
-    starRating: 5,
+    customer_name: "",
+    rating: 1,
     comment: "",
   });
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/reviews');
+      setReviews(response.data)
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+    }
+  };
+
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -20,18 +37,31 @@ export default function Review(): React.ReactElement {
     const { name, value } = e.target;
     setNewReview((prev) => ({
       ...prev,
-      [name]: name === "starRating" ? parseInt(value, 10) : value,
+      [name]: name === "rating" ? parseInt(value, 10) : value,
     }));
   };
 
   const handleStarClick = (rating: number) => {
-    setNewReview((prev) => ({ ...prev, starRating: rating }));
+    setNewReview((prev) => ({ ...prev, rating: rating }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const [alertInfo, setAlertInfo] = useState<{type: 'danger' | 'success'; message: string} | null>(null);
+  const handleCloseAlert = () => {
+    setAlertInfo(null);
+  }
+  
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setReviews((prev) => [...prev, newReview]);
-    setNewReview({ customerName: "", starRating: 5, comment: "" });
+    try {
+      await axios.post('http://localhost:5000/reviews', newReview);
+      setNewReview({ customer_name: "", rating: 0, comment: "" });
+      fetchReviews();
+      setAlertInfo({ type: 'success', message: 'Review submitted successfully!' });
+    } catch (error) {
+      console.error('Error submitting review:',error);
+      setAlertInfo({ type: 'danger', message: 'Failed to submit review! please try again.' });
+    }
+
   };
 
   const StarIcon: React.FC<{ filled: boolean; onClick: () => void }> = ({
@@ -60,7 +90,7 @@ export default function Review(): React.ReactElement {
             Customer Reviews
           </h2>
         </div>
-
+        {alertInfo && <Alert type={alertInfo.type} message={alertInfo.message} onClose={handleCloseAlert}/>}
         {/* Review form */}
         <form
           onSubmit={handleSubmit}
@@ -68,16 +98,16 @@ export default function Review(): React.ReactElement {
         >
           <div className="mb-4">
             <label
-              htmlFor="customerName"
+              htmlFor="customer_name"
               className="block text-gray-700 font-bold mb-2"
             >
               Name
             </label>
             <input
               type="text"
-              id="customerName"
-              name="customerName"
-              value={newReview.customerName}
+              id="customer_name"
+              name="customer_name"
+              value={newReview.customer_name}
               onChange={handleInputChange}
               required
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -85,7 +115,7 @@ export default function Review(): React.ReactElement {
           </div>
           <div className="mb-4">
             <label
-              htmlFor="starRating"
+              htmlFor="rating"
               className="block text-gray-700 font-bold mb-2"
             >
               Rating
@@ -94,7 +124,7 @@ export default function Review(): React.ReactElement {
               {[1, 2, 3, 4, 5].map((rating) => (
                 <StarIcon
                   key={rating}
-                  filled={rating <= newReview.starRating}
+                  filled={rating <= newReview.rating}
                   onClick={() => handleStarClick(rating)}
                 />
               ))}
@@ -127,15 +157,15 @@ export default function Review(): React.ReactElement {
 
         {/* Display */}
         <div className="grid md:grid-cols-2 gap-6">
-          {reviews.map((review, index) => (
-            <div key={index} className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="font-bold text-lg mb-2">{review.customerName}</h3>
+          {reviews.map((review) => (
+            <div key={review.id} className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="font-bold text-lg mb-2">{review.customer_name}</h3>
               <div className="flex items-center mb-2">
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
                     className={`w-5 h-5 ${
-                      i < review.starRating
+                      i < review.rating
                         ? "text-yellow-400"
                         : "text-gray-300"
                     }`}
