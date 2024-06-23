@@ -22,7 +22,7 @@ export default function Review(): React.ReactElement {
   }, []);
 
   const fetchReviews = async () => {
-    try {
+    try { 
       const response = await axios.get('http://localhost:5000/reviews');
       setReviews(response.data)
     } catch (err) {
