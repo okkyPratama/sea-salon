@@ -5,8 +5,10 @@ import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
 import Review from "./components/Review";
 import Service from "./components/Service";
+import { AuthProvider } from "./context/AuthContext";
 const App: React.FC = () => {
   return (
+    <AuthProvider>
     <div className="App">
       <Navbar />
       <Hero />
@@ -14,6 +16,7 @@ const App: React.FC = () => {
       <Review />
       <Footer />
     </div>
+    </AuthProvider>
   );
 };
 
