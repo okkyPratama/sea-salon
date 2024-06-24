@@ -4,11 +4,9 @@ export default function Footer() {
       <div className="mx-auto w-full max-w-[1166px] px-4 xl:px-0">
         <div className="flex flex-col justify-between sm:px-[18px] md:flex-row md:px-10">
           <div className="md:w-[316px]">
-            <p className="text-[18px] font-medium text-white">
               <h1 className="text-white font-extrabold">
                 <span className="text-cyan-600">SEA</span> Salon
               </h1>
-            </p>
             <p className="mt-[18px] text-[15px] font-normal text-white/[80%] text-start">
               At SEA Salon, we redefine beauty and elegance through our
               exceptional services and unwavering commitment to our clients.
