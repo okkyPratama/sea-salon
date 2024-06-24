@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
+import Alert from "./Alert";
 
 interface RegisterFormProps {
     onClose: () => void;
@@ -13,6 +14,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onClose, switchToLogin}) => 
     const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const {login} = useAuth();
+    const [alertInfo, setAlertInfo] = useState<{type: 'danger' | 'success'; message: string} | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,11 +25,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onClose, switchToLogin}) => 
                 phone_number: phoneNumber,
                 password
               });
+              
+            setAlertInfo({type:'success',message:'Register successful!'});
             
-            await login(email,password);
-            onClose();
+            setTimeout( async()=> {
+                try {
+                    await login(email,password);
+                    onClose();
+                } catch (error) {
+                    console.error("Auto-login failed:", error);
+                }
+
+            },2000)
         } catch (error) {
             console.error("Register failed: ",error);
+            setAlertInfo({ type: 'danger', message: 'Register failed. Please try again.' });
         }
     };
 
@@ -37,7 +49,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onClose, switchToLogin}) => 
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-          >
+            >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -46,6 +58,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({onClose, switchToLogin}) => 
             <h1 className="text-xl font-bold text-center leading-tight tracking-tight text-gray-900 md:text-2xl">
               REGISTER
             </h1>
+              {alertInfo && (
+                <Alert 
+                    type={alertInfo.type}
+                    message={alertInfo.message}
+                    onClose={() => setAlertInfo(null)}
+                />
+              )}
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
               <div>
                 <label htmlFor="fullname" className="block mb-2 text-sm font-medium text-gray-900">

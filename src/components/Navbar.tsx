@@ -67,7 +67,7 @@ const Navbar: React.FC = () => {
               alt="SEA Salon Logo"
             />
             <span className="self-center text-2xl font-semibold whitespace-nowrap">
-              SEA Salon
+              <span className="text-cyan-800 ">SEA</span> Salon
             </span>
           </a>
           <div className="flex md:order-2 items-center">
@@ -123,7 +123,6 @@ const Navbar: React.FC = () => {
               </NavLink>
               <NavLink href="#">Services</NavLink>
               <NavLink href="#">Locations</NavLink>
-              <NavLink href="#">Promo</NavLink>
               <NavLink href="#">Contact</NavLink>
             </ul>
           </div>

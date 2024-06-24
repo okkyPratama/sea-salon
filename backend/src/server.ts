@@ -6,7 +6,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 
-
 dotenv.config();
 
 const app = express();
