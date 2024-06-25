@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import RegisterForm from "./RegisterForm";
 import Alert from "./Alert";
+import { useNavigate } from "react-router-dom";
 
 interface LoginFormProps {
   onClose: () => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onClose }) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
@@ -23,6 +25,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose }) => {
       await login(email, password);
       setAlertInfo({ type: "success", message: "Login successful!" });
       setTimeout(() => {
+        navigate('/dashboard')
         onClose();
       }, 2000);
     } catch (error) {

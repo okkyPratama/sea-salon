@@ -6,16 +6,32 @@ import Navbar from "./components/Navbar";
 import Review from "./components/Review";
 import Service from "./components/Service";
 import { AuthProvider } from "./context/AuthContext";
-const App: React.FC = () => {
+import {  Route, Routes,BrowserRouter } from "react-router-dom";
+import DashboardLayout from "./components/dashboard/DashboardLayout";
+
+const MainLayout: React.FC = () => {
   return (
-    <AuthProvider>
-    <div className="App">
+    <>
       <Navbar />
       <Hero />
       <Service />
       <Review />
       <Footer />
-    </div>
+    </>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<MainLayout />} />
+            <Route path="/dashboard/*" element={<DashboardLayout />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
     </AuthProvider>
   );
 };
