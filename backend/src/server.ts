@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { authenticateToken } from "./middleware/auth";
 
 
 dotenv.config();
@@ -47,7 +48,7 @@ app.get('/reviews', async (req, res) => {
 });
 
 // Booking endpoints
-app.post('/bookings', async (req, res) => {
+app.post('/bookings',authenticateToken, async (req, res) => {
     try {
         const { name, phone_number, service, date_time } = req.body;
         const result = await pool.query(

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import ReservationForm from "./ReservationForm";
+import { useAuth } from "../hooks/useAuth";
+import LoginForm from "./LoginForm";
 
 type ServiceProps = {
   title: string;
@@ -47,16 +49,24 @@ const ServiceCard: React.FC<ServiceProps> = ({ title, image, alt, onClick }) => 
 
  const Service:React.FC = () => {
     const [showReservationForm, setShowReservationForm] = useState(false);
+    const [showLoginForm, setShowLoginForm] = useState(false);
     const [selectedService, setSelectedService] = useState("");
+    const {user} = useAuth();
     
     const handleBookNowClick = (title:string) => {
-        setSelectedService(title);
-        setShowReservationForm(true);
+        if (user) {
+          setShowReservationForm(true);
+          setSelectedService(title);
+          
+        } else {
+            setShowLoginForm(true);
+        }
     }
     
     const handleCloseForm = () => {
         setShowReservationForm(false);
         setSelectedService("");
+        setShowLoginForm(false);
     };
     
     return (
@@ -75,7 +85,8 @@ const ServiceCard: React.FC<ServiceProps> = ({ title, image, alt, onClick }) => 
         </div>
       </div>
       {showReservationForm && <ReservationForm onClose={handleCloseForm} defaultService={selectedService} />}
-
+      {showLoginForm && !user && <LoginForm onClose={handleCloseForm} />}
+  
       </section>
   );
 }

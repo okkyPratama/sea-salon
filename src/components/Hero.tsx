@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import ReservationForm from "./ReservationForm";
+import { useAuth } from "../hooks/useAuth";
+import LoginForm from "./LoginForm";
 
 const BookNowIcon: React.FC = () => (
   <svg
@@ -18,13 +20,21 @@ const BookNowIcon: React.FC = () => (
 
 const Hero: React.FC = () => {
   const [showReservationForm, setShowReservationForm] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const {user} = useAuth();
   
   const handleBookNowClick = () => {
-    setShowReservationForm(true);
+    if (user) {
+      setShowReservationForm(true);
+      
+    } else {
+      setShowLoginForm(true);
+    }
   }
 
   const handleCloseForm = () => {
     setShowReservationForm(false);
+    setShowLoginForm(false);
   };
 
   return (
@@ -52,6 +62,8 @@ const Hero: React.FC = () => {
         </div>
       </div>
       {showReservationForm && <ReservationForm onClose={handleCloseForm} />}
+      {showLoginForm && !user && <LoginForm onClose={handleCloseForm} />}
+
     </section>
   );
 };

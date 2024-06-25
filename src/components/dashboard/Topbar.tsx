@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface TopbarProps {
   toggleSidebar: () => void;
@@ -7,6 +9,8 @@ interface TopbarProps {
 const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { user,logout } = useAuth();
+  const navigate = useNavigate();
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -23,6 +27,17 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    setIsDropdownOpen(false);
+  }
+  
+  const handleGoToHome = () => {
+    navigate('/');
+    setIsDropdownOpen(false);
+  }
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -74,13 +89,13 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                       className="text-sm text-gray-900 dark:text-white"
                       role="none"
                     >
-                      Full Name
+                      {user?.fullname}
                     </p>
                     <p
                       className="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
                       role="none"
                     >
-                      fullname@email.com
+                      {user?.email}
                     </p>
                   </div>
                   <ul className="py-1" role="none">
@@ -94,13 +109,22 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                       </a>
                     </li>
                     <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                      <button
+                        onClick={handleGoToHome}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                         role="menuitem"
                       >
-                        Sign out
-                      </a>
+                        Back to homepage
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                        role="menuitem"
+                      >
+                        Logout
+                      </button>
                     </li>
                   </ul>
                 </div>

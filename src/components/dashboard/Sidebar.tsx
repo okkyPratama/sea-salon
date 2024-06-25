@@ -1,13 +1,13 @@
 import React from "react";
+import { useAuth } from "../../hooks/useAuth";
 
 interface SidebarProps {
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
 }
 
-
-const Sidebar: React.FC<SidebarProps> = ({isSidebarOpen, toggleSidebar}) => {
-
+const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
+  const { user } = useAuth();
   return (
     <>
       <aside
@@ -37,80 +37,87 @@ const Sidebar: React.FC<SidebarProps> = ({isSidebarOpen, toggleSidebar}) => {
               ></path>
             </svg>
           </button>
-          <div
-            className="flex items-center mb-5 flex-col"
-          >
+          <div className="flex items-center mb-5 flex-col">
             <img
               src="/src/assets/sea-salon-logo-bgremove.png"
               className="h-28 sm:h-24"
               alt="Logo"
             />
-            <p className="text-white">Fullname</p>
-            <p className="text-white font-bold">Role</p>
-            
+            <p className="text-white"> {user?.fullname} </p>
+            <p className="text-white font-bold">{user?.role}</p>
           </div>
           <ul className="space-y-2 font-medium">
-         
-            <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
-              >
-                <svg
-                  className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+            {user?.role === "Customer" && (
+              <li>
+                <a
+                  href="#"
+                  className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
                 >
-                  <path d="M17 2h-1V1a1 1 0 00-2 0v1H6V1a1 1 0 00-2 0v1H3a3 3 0 00-3 3v12a3 3 0 003 3h14a3 3 0 003-3V5a3 3 0 00-3-3zm1 15a1 1 0 01-1 1H3a1 1 0 01-1-1v-7h16v7zm0-9H2V5a1 1 0 011-1h1v1a1 1 0 002 0V4h8v1a1 1 0 002 0V4h1a1 1 0 011 1v3z" />
-                </svg>
-                <span className="flex-1 ms-3 whitespace-nowrap">
-                  Reservations
-                </span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
-              >
-                <svg
-                  className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 20L18 6M6 6l12 14" />
-                  <circle cx="6" cy="6" r="2" />
-                  <circle cx="18" cy="18" r="2" />
-                  <path d="M20 4v6h-6" />
-                </svg>
-                <span className="flex-1 ms-3 whitespace-nowrap">Services</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
-              >
-                <svg
-                  className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M17 2H7C5.9 2 5 2.9 5 4V22H19V4C19 2.9 18.1 2 17 2ZM10 20H8V18H10V20ZM10 16H8V14H10V16ZM10 12H8V10H10V12ZM10 8H8V6H10V8ZM16 20H14V18H16V20ZM16 16H14V14H16V16ZM16 12H14V10H16V12ZM16 8H14V6H16V8ZM7 4H17V2L7 2V4Z" />
-                </svg>
-                <span className="flex-1 ms-3 whitespace-nowrap">Branch</span>
-              </a>
-            </li>
+                  <svg
+                    className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M17 2h-1V1a1 1 0 00-2 0v1H6V1a1 1 0 00-2 0v1H3a3 3 0 00-3 3v12a3 3 0 003 3h14a3 3 0 003-3V5a3 3 0 00-3-3zm1 15a1 1 0 01-1 1H3a1 1 0 01-1-1v-7h16v7zm0-9H2V5a1 1 0 011-1h1v1a1 1 0 002 0V4h8v1a1 1 0 002 0V4h1a1 1 0 011 1v3z" />
+                  </svg>
+                  <span className="flex-1 ms-3 whitespace-nowrap">
+                    Reservations
+                  </span>
+                </a>
+              </li>
+            )}
+
+            {user?.role === "Admin" && (
+              <>
+                <li>
+                  <a
+                    href="#"
+                    className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
+                  >
+                    <svg
+                      className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M6 20L18 6M6 6l12 14" />
+                      <circle cx="6" cy="6" r="2" />
+                      <circle cx="18" cy="18" r="2" />
+                      <path d="M20 4v6h-6" />
+                    </svg>
+                    <span className="flex-1 ms-3 whitespace-nowrap">
+                      Services
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
+                  >
+                    <svg
+                      className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M17 2H7C5.9 2 5 2.9 5 4V22H19V4C19 2.9 18.1 2 17 2ZM10 20H8V18H10V20ZM10 16H8V14H10V16ZM10 12H8V10H10V12ZM10 8H8V6H10V8ZM16 20H14V18H16V20ZM16 16H14V14H16V16ZM16 12H14V10H16V12ZM16 8H14V6H16V8ZM7 4H17V2L7 2V4Z" />
+                    </svg>
+                    <span className="flex-1 ms-3 whitespace-nowrap">
+                      Branch
+                    </span>
+                  </a>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </aside>

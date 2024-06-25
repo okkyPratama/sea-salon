@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Alert from "./Alert";
+import { useAuth } from "../hooks/useAuth";
 
 interface ReservationFormProps {
   onClose: () => void;
@@ -19,7 +20,8 @@ const validateDateTime = (dateTime: string): string | null => {
   };
 
 const ReservationForm: React.FC<ReservationFormProps> = ({onClose,defaultService = ''}) => {
-    const [formData, setFormData] = useState({
+  const {user} = useAuth();  
+  const [formData, setFormData] = useState({
         name: '',
         phoneNumber: '',
         service: defaultService,
@@ -58,6 +60,11 @@ const ReservationForm: React.FC<ReservationFormProps> = ({onClose,defaultService
     
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!user) {
+          setAlertInfo({ type: 'danger', message: 'You must be logged in to make a reservation.' });
+          return;
+      }
+
         const dateTimeError = validateDateTime(formData.dateTime);
         if (dateTimeError) {
           setErrors(prevErrors => ({
@@ -88,6 +95,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({onClose,defaultService
             setIsLoading(false);
         }
       };
+
 
 
     return (
