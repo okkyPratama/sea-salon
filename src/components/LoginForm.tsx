@@ -24,6 +24,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose }) => {
     try {
       await login(email, password);
       setAlertInfo({ type: "success", message: "Login successful!" });
+      
       setTimeout(() => {
         navigate('/dashboard')
         onClose();

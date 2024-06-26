@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 interface SidebarProps {
@@ -49,9 +50,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
           <ul className="space-y-2 font-medium">
             {user?.role === "Customer" && (
               <li>
-                <a
-                  href="#"
-                  className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
+                <NavLink
+                  to="/dashboard/reservations"
+                  className={({ isActive }) =>
+                    `flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group ${
+                      isActive ? 'bg-gray-700' : ''
+                    }`
+                  }
                 >
                   <svg
                     className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white"
@@ -65,18 +70,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
                   <span className="flex-1 ms-3 whitespace-nowrap">
                     Reservations
                   </span>
-                </a>
+                </NavLink>
               </li>
             )}
 
             {user?.role === "Admin" && (
               <>
                 <li>
-                  <a
-                    href="#"
-                    className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
-                  >
-                    <svg
+                <NavLink
+                  to="/dashboard/services"
+                  className={({ isActive }) =>
+                    `flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group ${
+                      isActive ? 'bg-gray-700' : ''
+                    }`
+                  }
+                >
+                  <svg
                       className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
@@ -95,13 +104,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
                     <span className="flex-1 ms-3 whitespace-nowrap">
                       Services
                     </span>
-                  </a>
+
+                </NavLink>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
-                  >
+                <NavLink
+                  to="/dashboard/branch"
+                  className={({ isActive }) =>
+                    `flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group ${
+                      isActive ? 'bg-gray-700' : ''
+                    }`
+                  }
+                >
                     <svg
                       className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white"
                       aria-hidden="true"
@@ -114,7 +128,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
                     <span className="flex-1 ms-3 whitespace-nowrap">
                       Branch
                     </span>
-                  </a>
+                </NavLink>
+
                 </li>
               </>
             )}

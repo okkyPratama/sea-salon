@@ -62,6 +62,58 @@ app.post('/bookings',authenticateToken, async (req, res) => {
     }
 })
 
+// Services endpoint
+app.get('/services',async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM services');
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching services' });
+
+    }
+})
+
+app.post('/services', authenticateToken, async (req, res) => {
+    try {
+        const { name, duration_per_session } = req.body;
+        const result = await pool.query(
+            'INSERT INTO services (name, duration_per_session) VALUES ($1, $2) RETURNING *',
+            [name, duration_per_session]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while creating the service' });
+    }
+});
+
+// Branch endpoint
+app.get('/branches', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM branch');
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching services' });
+
+    }
+})
+
+app.post('/branches', authenticateToken, async (req, res) => {
+    try {
+        const { branch_name, branch_location, opening_time, closing_time } = req.body;
+        const result = await pool.query(
+            'INSERT INTO branch (branch_name, branch_location, opening_time, closing_time) VALUES ($1, $2, $3, $4) RETURNING *',
+            [branch_name, branch_location, opening_time, closing_time]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while creating the branch' });
+    }
+});
+
 // Register endpoint
 app.post('/register', async (req, res) => {
     try {

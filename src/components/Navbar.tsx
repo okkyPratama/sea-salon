@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
+import {  useNavigate } from "react-router-dom";
 
 interface NavLinkProps {
   href: string;
@@ -37,8 +38,9 @@ const NavLink: React.FC<NavLinkProps> = ({
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [showAuthForm,setShowAuthForm] = useState<'login' | 'register' | null>(null);
+  const navigate = useNavigate();
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
@@ -52,6 +54,10 @@ const Navbar: React.FC = () => {
   const handleCloseAuthForm = () => {
     setShowAuthForm(null);
   };
+
+  const handleGoToDashboard = () => {
+    navigate('/dashboard');
+  }
 
   return (
     <>
@@ -73,10 +79,10 @@ const Navbar: React.FC = () => {
           <div className="flex md:order-2 items-center">
             {user ? (
               <button
-                onClick={logout}
-                className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center w-full md:w-auto"
+                onClick={handleGoToDashboard}
+                className="text-white bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center w-full md:w-auto"
               >
-                Logout
+                Dashboard
               </button>
             ) : (
               <button
