@@ -2,7 +2,7 @@ import React from "react";
 
 const FormLayout: React.FC = () => {
   return (
-    <div className="flex justify-center items-center h-full">
+    <div className="flex justify-start items-center h-full">
     <div className="w-full max-w-3xl p-6 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8">
       <form className="space-y-6" action="#">
         <h5 className="text-2xl font-medium text-gray-900 mb-6">
