@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Breadcrumb from './Breadcrumb';
-import axios from 'axios';
+import { useAuth } from '../../hooks/useAuth';
 
 const AddService: React.FC = () => {
   const [name, setName] = useState('');
   const [duration, setDuration] = useState('');
   const navigate = useNavigate();
+  const {authAxios} = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        await axios.post('/services', { name, duration_per_session: duration });
+        await authAxios.post('http://localhost:5000/services', { name, duration_per_session: duration });
         navigate('/dashboard/services');
     } catch (error) {
       console.error('Error adding service:', error);

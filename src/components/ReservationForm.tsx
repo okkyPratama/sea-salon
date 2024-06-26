@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Alert from "./Alert";
 import { useAuth } from "../hooks/useAuth";
@@ -20,7 +19,7 @@ const validateDateTime = (dateTime: string): string | null => {
   };
 
 const ReservationForm: React.FC<ReservationFormProps> = ({onClose,defaultService = ''}) => {
-  const {user} = useAuth();  
+  const {user,authAxios} = useAuth();  
   const [formData, setFormData] = useState({
         name: '',
         phoneNumber: '',
@@ -76,7 +75,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({onClose,defaultService
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/bookings', {
+            const response = await authAxios.post('http://localhost:5000/bookings', {
                 name: formData.name,
                 phone_number: formData.phoneNumber,
                 service: formData.service,

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 import { ReactNode, createContext, useState } from "react";
 
 interface User {
@@ -11,6 +11,7 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  authAxios: AxiosInstance;
 }
 
 export const AuthContext = createContext< AuthContextType| undefined>(undefined);
@@ -40,10 +41,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem("token");
   };
 
+  const authAxios = axios.create();
+
+  authAxios.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
   
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout,authAxios }}>
       {children}
     </AuthContext.Provider>
   );

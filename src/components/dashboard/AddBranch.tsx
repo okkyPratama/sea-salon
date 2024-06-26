@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Breadcrumb from './Breadcrumb';
+import { useAuth } from '../../hooks/useAuth';
 
 const AddBranch: React.FC = () => {
   const [branchName, setBranchName] = useState('');
@@ -9,17 +9,18 @@ const AddBranch: React.FC = () => {
   const [openingTime, setOpeningTime] = useState('');
   const [closingTime, setClosingTime] = useState('');
   const navigate = useNavigate();
+  const {authAxios} = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/branches', {
+      await authAxios.post('http://localhost:5000/branches', {
         branch_name: branchName,
         branch_location: location,
         opening_time: openingTime,
         closing_time: closingTime
       });
-      navigate('/dashboard/branches');
+      navigate('/dashboard/branch');
     } catch (error) {
       console.error('Error adding branch:', error);
     }
