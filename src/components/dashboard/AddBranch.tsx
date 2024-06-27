@@ -28,8 +28,8 @@ const AddBranch: React.FC = () => {
 
   const breadcrumbItems = [
     { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Branches', path: '/dashboard/branches' },
-    { label: 'Add Branch', path: '/dashboard/branches/add' },
+    { label: 'Branches', path: '/dashboard/branch' },
+    { label: 'Add Branch', path: '/dashboard/branch/add' },
   ];
 
   return (

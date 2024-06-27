@@ -24,7 +24,7 @@ export default function Footer() {
               src="/src/assets/sea-salon-logo-no-background.png"
             />
           </div>
-          <div className="md:w-[316px]">
+          <div className="md:w-[316px]" id="contact">
             <div className="mt-[38px] flex">
               <div className="flex h-[38px] w-[38px] items-center justify-center rounded-[75%]">
                 <svg
@@ -116,7 +116,6 @@ export default function Footer() {
                 <li className="mt-[15px]">
                   <a
                     className="text-deutziawhite hover:text-deutziawhite/80 font-inter text-[15px] font-normal hover:font-semibold"
-                    href="/our-tutors"
                   >
                     News
                   </a>
@@ -124,7 +123,6 @@ export default function Footer() {
                 <li className="mt-[15px]">
                   <a
                     className="text-deutziawhite hover:text-deutziawhite/80 font-inter text-[15px] font-normal hover:font-semibold"
-                    href="/plans-and-pricing"
                   >
                     Plans and pricing
                   </a>
@@ -132,7 +130,6 @@ export default function Footer() {
                 <li className="mt-[15px]">
                   <a
                     className="text-deutziawhite hover:text-deutziawhite/80 font-inter text-[15px] font-normal hover:font-semibold"
-                    href="/terms-and-conditions"
                   >
                     Terms and conditions
                   </a>
@@ -140,7 +137,6 @@ export default function Footer() {
                 <li className="mt-[15px]">
                   <a
                     className="text-deutziawhite hover:text-deutziawhite/80 font-inter text-[15px] font-normal hover:font-semibold"
-                    href="/privacy-policy"
                   >
                     Privacy policy
                   </a>

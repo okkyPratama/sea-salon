@@ -4,13 +4,16 @@ import { useNavigate } from "react-router-dom";
 
 interface TopbarProps {
   toggleSidebar: () => void;
+  setAlertInfo: React.Dispatch<React.SetStateAction<{type: 'danger' | 'success'; message: string} | null>>;
+
 }
 
-const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
+const Topbar: React.FC<TopbarProps> = ({ toggleSidebar,setAlertInfo }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user,logout } = useAuth();
   const navigate = useNavigate();
+  
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -30,8 +33,13 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    setAlertInfo({ type: 'success', message: 'Logout successful!' });
     setIsDropdownOpen(false);
+    
+    setTimeout(() => {
+      navigate('/');
+      setAlertInfo(null);
+    }, 4000);
   }
   
   const handleGoToHome = () => {
@@ -100,15 +108,6 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                   </div>
                   <ul className="py-1" role="none">
                     <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                        role="menuitem"
-                      >
-                        Profile
-                      </a>
-                    </li>
-                    <li>
                       <button
                         onClick={handleGoToHome}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
@@ -138,3 +137,4 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 };
 
 export default Topbar;
+ 

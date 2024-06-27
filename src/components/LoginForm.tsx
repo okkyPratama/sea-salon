@@ -22,11 +22,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      const { role } = await login(email, password);
       setAlertInfo({ type: "success", message: "Login successful!" });
       
       setTimeout(() => {
-        navigate('/dashboard')
+        if(role === "Customer") { 
+          navigate('dashboard/reservations');
+        } else if(role === "Admin") {
+          navigate('/dashboard/services');
+        }else {
+          navigate('/dashboard');
+        }
         onClose();
       }, 2000);
     } catch (error) {

@@ -56,7 +56,17 @@ const Navbar: React.FC = () => {
   };
 
   const handleGoToDashboard = () => {
-    navigate('/dashboard');
+    if (user) {
+      if (user.role === 'Customer') {
+        navigate('/dashboard/reservations');
+        
+      } else if (user.role === 'Admin') {
+        navigate('/dashboard/services');
+        
+      } else {
+        navigate('/dashboard');
+      }
+    }
   }
 
   return (
@@ -129,7 +139,7 @@ const Navbar: React.FC = () => {
               </NavLink>
               <NavLink href="#">Services</NavLink>
               <NavLink href="#">Locations</NavLink>
-              <NavLink href="#">Contact</NavLink>
+              <NavLink href="#contact">Contact</NavLink>
             </ul>
           </div>
         </div>

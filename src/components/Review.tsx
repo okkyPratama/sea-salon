@@ -1,9 +1,9 @@
 import axios from "axios";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import Alert from "./Alert";
 
 interface Review {
-  id?:number;
+  id?: number;
   customer_name: string;
   rating: number;
   comment: string;
@@ -16,20 +16,20 @@ export default function Review(): React.ReactElement {
     rating: 1,
     comment: "",
   });
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchReviews();
   }, []);
 
   const fetchReviews = async () => {
-    try { 
-      const response = await axios.get('http://localhost:5000/reviews');
-      setReviews(response.data)
+    try {
+      const response = await axios.get("http://localhost:5000/reviews");
+      setReviews(response.data);
     } catch (err) {
-      console.error('Error fetching reviews:', err);
+      console.error("Error fetching reviews:", err);
     }
   };
-
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -45,23 +45,40 @@ export default function Review(): React.ReactElement {
     setNewReview((prev) => ({ ...prev, rating: rating }));
   };
 
-  const [alertInfo, setAlertInfo] = useState<{type: 'danger' | 'success'; message: string} | null>(null);
+  const [alertInfo, setAlertInfo] = useState<{
+    type: "danger" | "success";
+    message: string;
+  } | null>(null);
   const handleCloseAlert = () => {
     setAlertInfo(null);
-  }
-  
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/reviews', newReview);
+      await axios.post("http://localhost:5000/reviews", newReview);
       setNewReview({ customer_name: "", rating: 0, comment: "" });
       fetchReviews();
-      setAlertInfo({ type: 'success', message: 'Review submitted successfully!' });
+      setAlertInfo({
+        type: "success",
+        message: "Review submitted successfully!",
+      });
     } catch (error) {
-      console.error('Error submitting review:',error);
-      setAlertInfo({ type: 'danger', message: 'Failed to submit review! please try again.' });
+      console.error("Error submitting review:", error);
+      setAlertInfo({
+        type: "danger",
+        message: "Failed to submit review! please try again.",
+      });
     }
+  };
 
+  const scroll = (scrollOfset: number) => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: scrollOfset,
+        behavior: "smooth",
+      });
+    }
   };
 
   const StarIcon: React.FC<{ filled: boolean; onClick: () => void }> = ({
@@ -90,7 +107,83 @@ export default function Review(): React.ReactElement {
             Customer Reviews
           </h2>
         </div>
-        {alertInfo && <Alert type={alertInfo.type} message={alertInfo.message} onClose={handleCloseAlert}/>}
+
+        {alertInfo && (
+          <Alert
+            type={alertInfo.type}
+            message={alertInfo.message}
+            onClose={handleCloseAlert}
+          />
+        )}
+
+        {/* Horizontal scrolling reviews */}
+        <div className="relative mb-12 -mx-4 px-4 overflow-hidden">
+          <div className="flex items-center">
+            <button
+              onClick={() => scroll(-600)}
+              className="p-2 bg-white rounded-full shadow-md z-10 mr-4 flex-shrink-0"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <div className="flex-grow overflow-hidden">
+            <div ref={scrollContainerRef} className="flex overflow-x-auto space-x-6 pb-4 hide-scrollbar" style={{ width: "calc(100vw - 5rem)" }}>
+              {reviews.map((review) => (
+                <div key={review.id} className="bg-white p-6 rounded-lg shadow-md flex-shrink-0 w-96">
+                  <div className="flex items-start mb-4">
+                    <div className="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gray-300 flex-shrink-0">
+                      <svg className="w-full h-full text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg">{review.customer_name}</h3>
+                      <div className="flex items-center">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <StarIcon key={star} filled={star <= review.rating} onClick={() => {}} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-gray-600">{review.comment}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+            <button
+              onClick={() => scroll(600)}
+              className="p-2 bg-white rounded-full shadow-md z-10 ml-4 flex-shrink-0"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
         {/* Review form */}
         <form
           onSubmit={handleSubmit}
@@ -154,33 +247,6 @@ export default function Review(): React.ReactElement {
             Submit Review
           </button>
         </form>
-
-        {/* Display */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {reviews.map((review) => (
-            <div key={review.id} className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="font-bold text-lg mb-2">{review.customer_name}</h3>
-              <div className="flex items-center mb-2">
-                {[...Array(5)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className={`w-5 h-5 ${
-                      i < review.rating
-                        ? "text-yellow-400"
-                        : "text-gray-300"
-                    }`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-600">{review.comment}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );

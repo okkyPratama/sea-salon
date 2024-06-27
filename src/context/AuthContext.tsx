@@ -11,7 +11,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) =>  Promise<{ role: "Customer" | "Admin" }>;
   logout: () => void;
   authAxios: AxiosInstance;
 }
@@ -26,11 +26,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<{ role: "Customer" | "Admin" }> => {
     try {
       const response = await axios.post('http://localhost:5000/login', { email, password });
       setUser(response.data.user);
       localStorage.setItem('token', response.data.token);
+      return { role: response.data.user.role };
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
