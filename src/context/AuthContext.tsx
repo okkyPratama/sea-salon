@@ -2,8 +2,10 @@ import axios, { AxiosInstance } from "axios";
 import { ReactNode, createContext, useState } from "react";
 
 interface User {
+  user_id:number;
   fullname: string;
   email: string;
+  phone_number: string;
   role: "Customer" | "Admin";
 }
 

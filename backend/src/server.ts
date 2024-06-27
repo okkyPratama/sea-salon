@@ -1,11 +1,10 @@
-import express from "express";
+import express, { Response } from "express";
 import { Pool } from "pg";
 import dotenv from 'dotenv';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { authenticateToken } from "./middleware/auth";
-
+import { authenticateToken, AuthenticatedRequest } from "./middleware/auth";
 
 dotenv.config();
 
@@ -47,20 +46,45 @@ app.get('/reviews', async (req, res) => {
     }
 });
 
-// Booking endpoints
-app.post('/bookings',authenticateToken, async (req, res) => {
+// Reservation endpoints
+app.post('/reservations', authenticateToken, async (req:AuthenticatedRequest, res: Response) => {
     try {
         const { name, phone_number, service, date_time } = req.body;
+        
+        if (!req.user) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+        const user_id = req.user.userId; 
+
         const result = await pool.query(
-            'INSERT INTO booking (name,phone_number,service,date_time) VALUES ($1, $2, $3, $4) RETURNING *',
-            [name, phone_number, service, date_time]
+            'INSERT INTO reservations (user_id, name, phone_number, service, date_time) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [user_id, name, phone_number, service, date_time]
         );
         res.json(result.rows[0]);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'An error occurred while creating the booking' });
+        res.status(500).json({ error: 'An error occurred while creating the reservation' });
     }
-})
+});
+
+app.get('/reservations', authenticateToken, async (req:AuthenticatedRequest, res:Response) => {
+    try {
+
+        if (!req.user) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+        
+        const user_id = req.user.userId;
+        const result = await pool.query(
+            'SELECT * FROM reservations WHERE user_id = $1 ORDER BY date_time DESC',
+            [user_id]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching reservations' });
+    }
+});
 
 // Services endpoint
 app.get('/services',async (req, res) => {
@@ -100,19 +124,7 @@ app.get('/branches', async (req, res) => {
     }
 })
 
-app.post('/branches', authenticateToken, async (req, res) => {
-    try {
-        const { branch_name, branch_location, opening_time, closing_time } = req.body;
-        const result = await pool.query(
-            'INSERT INTO branch (branch_name, branch_location, opening_time, closing_time) VALUES ($1, $2, $3, $4) RETURNING *',
-            [branch_name, branch_location, opening_time, closing_time]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'An error occurred while creating the branch' });
-    }
-});
+
 
 // Register endpoint
 app.post('/register', async (req, res) => {

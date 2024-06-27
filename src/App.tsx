@@ -9,6 +9,7 @@ import Branch from "./components/dashboard/Branch";
 import Reservation from "./components/dashboard/Reservation";
 import AddBranch from "./components/dashboard/AddBranch";
 import AddService from "./components/dashboard/AddService";
+import AddReservation from "./components/dashboard/AddReservation";
 
 const App: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
             <Route path="/" element={<LandingPage />} />
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route path="reservations" element={<Reservation />}></Route>
+              <Route path="reservations/add" element={<AddReservation />}></Route>
               <Route path="services" element={<AdminServices />} />
               <Route path="services/add" element={<AddService />} />
               <Route path="branch" element={<Branch />} />

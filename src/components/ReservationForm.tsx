@@ -75,7 +75,8 @@ const ReservationForm: React.FC<ReservationFormProps> = ({onClose,defaultService
         }
 
         try {
-            const response = await authAxios.post('http://localhost:5000/bookings', {
+            const response = await authAxios.post('http://localhost:5000/reservations', {
+                user_id: user.user_id,
                 name: formData.name,
                 phone_number: formData.phoneNumber,
                 service: formData.service,
