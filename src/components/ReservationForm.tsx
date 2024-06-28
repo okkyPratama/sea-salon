@@ -33,7 +33,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
   });
   const [branches, setBranches] = useState<Branch[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [alertInfo, setAlertInfo] = useState<{
     type: "danger" | "success";
     message: string;
@@ -41,25 +41,36 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
 
   const fetchBranchesAndServices = useCallback(async () => {
     try {
+      setIsLoading(true);
       console.log("Fetching branches and services...");
-      const response = await authAxios.get("/branches-services");
+      const response = await authAxios.get("http://localhost:5000/branches-services");
       console.log("Branches and services fetched:", response.data);
-      setBranches(response.data);
+      setBranches(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching branches and services:", error);
       setAlertInfo({
         type: "danger",
         message: "Failed to fetch branches and services. Please try again.",
       });
+      setBranches([]);
+    } finally {
+      setIsLoading(false);
     }
   }, [authAxios]);
+
+  useEffect(() => {
+    if (!Array.isArray(branches)) {
+      console.error("branches is not an array:", branches);
+      setBranches([]);
+    }
+  }, [branches]);
 
   useEffect(() => {
     console.log("ReservationForm isOpen:", isOpen);
     if (isOpen) {
       fetchBranchesAndServices();
       if (user) {
-        setFormData(prevState => ({
+        setFormData((prevState) => ({
           ...prevState,
           name: user.fullname || "",
           phoneNumber: user.phone_number || "",
@@ -67,6 +78,14 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
       }
     }
   }, [isOpen, user, fetchBranchesAndServices]);
+
+  useEffect(() => {
+    console.log("Branches state updated:", branches);
+  }, [branches]);
+  
+  useEffect(() => {
+    console.log("Form data updated:", formData);
+  }, [formData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -78,13 +97,19 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
     }));
 
     if (name === "branchId") {
-      setFormData(prevState => ({ ...prevState, service: "" }));
+      setFormData((prevState) => ({ ...prevState, service: "" }));
     }
 
     if (name === "dateTime") {
-      const selectedBranch = branches.find(branch => branch.id === parseInt(formData.branchId));
+      const selectedBranch = branches.find(
+        (branch) => branch.id === parseInt(formData.branchId)
+      );
       if (selectedBranch) {
-        const error = validateDateTime(value, selectedBranch.opening_time, selectedBranch.closing_time);
+        const error = validateDateTime(
+          value,
+          selectedBranch.opening_time,
+          selectedBranch.closing_time
+        );
         setErrors((prevErrors) => ({
           ...prevErrors,
           dateTime: error || "",
@@ -93,16 +118,22 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
     }
   };
 
-  const validateDateTime = (dateTime: string, openingTime: string, closingTime: string): string | null => {
+  const validateDateTime = (
+    dateTime: string,
+    openingTime: string,
+    closingTime: string
+  ): string | null => {
     const date = new Date(dateTime);
     const hours = date.getHours();
     const minutes = date.getMinutes();
-    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-  
+    const timeString = `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+
     if (timeString < openingTime || timeString > closingTime) {
       return `Booking time must be between ${openingTime} and ${closingTime}`;
     }
-  
+
     return null;
   };
 
@@ -116,9 +147,15 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
       return;
     }
 
-    const selectedBranch = branches.find(branch => branch.id === parseInt(formData.branchId));
+    const selectedBranch = branches.find(
+      (branch) => branch.id === parseInt(formData.branchId)
+    );
     if (selectedBranch) {
-      const dateTimeError = validateDateTime(formData.dateTime, selectedBranch.opening_time, selectedBranch.closing_time);
+      const dateTimeError = validateDateTime(
+        formData.dateTime,
+        selectedBranch.opening_time,
+        selectedBranch.closing_time
+      );
       if (dateTimeError) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -163,6 +200,16 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
 
   if (!isOpen) return null;
 
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+        <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full relative">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
       <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full relative">
@@ -170,8 +217,18 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
         >
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
         <h2 className="text-2xl font-bold mb-4">Make a Reservation</h2>
@@ -184,7 +241,10 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
         )}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="name"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Name
             </label>
             <input
@@ -198,7 +258,10 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="phoneNumber" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="phoneNumber"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Phone Number
             </label>
             <input
@@ -212,7 +275,10 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="branchId" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="branchId"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Branch
             </label>
             <select
@@ -224,13 +290,22 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
               required
             >
               <option value="">Select a branch</option>
-              {branches.map((branch) => (
-                <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
-              ))}
+              {Array.isArray(branches) && branches.length > 0 ? (
+                branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.branch_name}
+                  </option>
+                ))
+              ) : (
+                <option value="">No branches available</option>
+              )}
             </select>
           </div>
           <div className="mb-4">
-            <label htmlFor="service" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="service"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Service
             </label>
             <select
@@ -242,13 +317,22 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
               required
             >
               <option value="">Select a service</option>
-              {formData.branchId && branches.find(branch => branch.id === parseInt(formData.branchId))?.services.map((service) => (
-                <option key={service.id} value={service.name}>{service.name} ({service.duration})</option>
-              ))}
+              {formData.branchId &&
+                Array.isArray(branches) &&
+                branches
+                  .find((branch) => branch.id === parseInt(formData.branchId))
+                  ?.services?.map((service) => (
+                    <option key={service.id} value={service.name}>
+                      {service.name} ({service.duration})
+                    </option>
+                  ))}
             </select>
           </div>
           <div className="mb-4">
-            <label htmlFor="dateTime" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="dateTime"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Date and Time
             </label>
             <input

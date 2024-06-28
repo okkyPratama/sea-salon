@@ -65,7 +65,6 @@ const Hero: React.FC = () => {
           <img src="/src/assets/sea-salon-model2-bgremove.png" alt="mockup" />
         </div>
       </div>
-      {/* Always render ReservationForm, but control visibility with isOpen prop */}
       <ReservationForm isOpen={showReservationForm} onClose={handleCloseForm} />
       {showLoginForm && !user && <LoginForm onClose={handleCloseForm} />}
     </section>
