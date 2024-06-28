@@ -137,8 +137,7 @@ const Navbar: React.FC = () => {
               <NavLink href="#" current>
                 Home
               </NavLink>
-              <NavLink href="#">Services</NavLink>
-              <NavLink href="#">Locations</NavLink>
+              <NavLink href="#services">Services</NavLink>
               <NavLink href="#contact">Contact</NavLink>
             </ul>
           </div>

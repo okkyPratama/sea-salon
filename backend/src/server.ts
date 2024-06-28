@@ -47,18 +47,34 @@ app.get('/reviews', async (req, res) => {
 });
 
 // Reservation endpoints
-app.post('/reservations', authenticateToken, async (req:AuthenticatedRequest, res: Response) => {
+app.post('/reservations', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { name, phone_number, service, date_time } = req.body;
+        const { name, phone_number, service, date_time, branch_id } = req.body;
         
         if (!req.user) {
             return res.status(401).json({ error: 'User not authenticated' });
         }
-        const user_id = req.user.userId; 
+        const user_id = req.user.userId;
+
+        const branchResult = await pool.query('SELECT opening_time, closing_time FROM branch WHERE id = $1', [branch_id]);
+        if (branchResult.rows.length === 0) {
+            return res.status(400).json({ error: 'Invalid branch' });
+        }
+        const { opening_time, closing_time } = branchResult.rows[0];
+        const reservationTime = new Date(date_time);
+        const reservationTimeOnly = reservationTime.toTimeString().split(' ')[0];
+        if (reservationTimeOnly < opening_time || reservationTimeOnly > closing_time) {
+            return res.status(400).json({ error: 'Reservation time is outside branch opening hours' });
+        }
+
+        const serviceResult = await pool.query('SELECT * FROM branch_services WHERE branch_id = $1 AND service_id = (SELECT id FROM services WHERE name = $2)', [branch_id, service]);
+        if (serviceResult.rows.length === 0) {
+            return res.status(400).json({ error: 'Selected service is not offered at this branch' });
+        }
 
         const result = await pool.query(
-            'INSERT INTO reservations (user_id, name, phone_number, service, date_time) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [user_id, name, phone_number, service, date_time]
+            'INSERT INTO reservations (user_id, name, phone_number, service, date_time, branch_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [user_id, name, phone_number, service, date_time, branch_id]
         );
         res.json(result.rows[0]);
     } catch (error) {
@@ -67,16 +83,15 @@ app.post('/reservations', authenticateToken, async (req:AuthenticatedRequest, re
     }
 });
 
-app.get('/reservations', authenticateToken, async (req:AuthenticatedRequest, res:Response) => {
+app.get('/reservations', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-
         if (!req.user) {
             return res.status(401).json({ error: 'User not authenticated' });
         }
         
         const user_id = req.user.userId;
         const result = await pool.query(
-            'SELECT * FROM reservations WHERE user_id = $1 ORDER BY date_time DESC',
+            'SELECT r.*, b.branch_name FROM reservations r JOIN branch b ON r.branch_id = b.id WHERE r.user_id = $1 ORDER BY r.date_time DESC',
             [user_id]
         );
         res.json(result.rows);
@@ -124,7 +139,74 @@ app.get('/branches', async (req, res) => {
     }
 })
 
+app.post('/branches', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+   
+        const { branch_name, branch_location, opening_time, closing_time } = req.body;
+        const result = await pool.query(
+            'INSERT INTO branch (branch_name, branch_location, opening_time, closing_time) VALUES ($1, $2, $3, $4) RETURNING *',
+            [branch_name, branch_location, opening_time, closing_time]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while creating the branch' });
+    }
+});
 
+// branch-services endpoint
+app.post('/branch-services', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+
+        const { branch_id, service_name, duration_per_session } = req.body;
+
+        const serviceResult = await pool.query(
+            'INSERT INTO services (name, duration_per_session) VALUES ($1, $2) RETURNING id',
+            [service_name, duration_per_session]
+        );
+        const service_id = serviceResult.rows[0].id;
+
+        const result = await pool.query(
+            'INSERT INTO branch_services (branch_id, service_id, duration_per_session) VALUES ($1, $2, $3) RETURNING *',
+            [branch_id, service_id, duration_per_session]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while adding service to branch' });
+    }
+});
+
+app.get('/branches-services', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT b.id, b.branch_name, b.opening_time, b.closing_time, 
+                   json_agg(json_build_object('id', s.id, 'name', s.name, 'duration', bs.duration_per_session)) as services
+            FROM branch b
+            LEFT JOIN branch_services bs ON b.id = bs.branch_id
+            LEFT JOIN services s ON bs.service_id = s.id
+            GROUP BY b.id
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching branches and services' });
+    }
+});
+
+app.get('/branch-services/:branchId', async (req, res) => {
+    try {
+        const { branchId } = req.params;
+        const result = await pool.query(
+            'SELECT s.id, s.name, bs.duration_per_session FROM services s JOIN branch_services bs ON s.id = bs.service_id WHERE bs.branch_id = $1',
+            [branchId]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching branch services' });
+    }
+});
 
 // Register endpoint
 app.post('/register', async (req, res) => {

@@ -11,7 +11,7 @@ const LandingPage: React.FC = () => {
         <Hero />
         <Service />
         <Review />
-        <Footer />
+        <Footer />    
       </>
     );
   };

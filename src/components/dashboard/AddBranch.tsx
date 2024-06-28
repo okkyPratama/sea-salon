@@ -6,8 +6,8 @@ import { useAuth } from '../../hooks/useAuth';
 const AddBranch: React.FC = () => {
   const [branchName, setBranchName] = useState('');
   const [location, setLocation] = useState('');
-  const [openingTime, setOpeningTime] = useState('09:00');
-  const [closingTime, setClosingTime] = useState('17:00');
+  const [openingTime, setOpeningTime] = useState('');
+  const [closingTime, setClosingTime] = useState('');
   const navigate = useNavigate();
   const { authAxios } = useAuth();
 

@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import ReservationForm from "./ReservationForm";
-import { useAuth } from "../hooks/useAuth";
-import LoginForm from "./LoginForm";
 
 type ServiceProps = {
   title: string;
   image: string;
   alt: string;
-  onClick: (title: string) => void;
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 const services = [
@@ -35,7 +33,7 @@ const ServiceCard: React.FC<ServiceProps> = ({ title, image, alt, onClick }) => 
     <div className="mt-3">
       <h4 className="text-gray-800 text-xl font-semibold mb-2">{title}</h4>
       <button
-        onClick= {() => onClick(title)}
+        onClick={onClick}
         type="button"
         className="w-full mt-3 px-5 py-2.5 text-sm text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 shadow-cyan-500/50 rounded-md"
         aria-label={`Book ${title}`}
@@ -47,30 +45,19 @@ const ServiceCard: React.FC<ServiceProps> = ({ title, image, alt, onClick }) => 
   </div>
 );
 
- const Service:React.FC = () => {
+export default function Service() {
     const [showReservationForm, setShowReservationForm] = useState(false);
-    const [showLoginForm, setShowLoginForm] = useState(false);
-    const [selectedService, setSelectedService] = useState("");
-    const {user} = useAuth();
     
-    const handleBookNowClick = (title:string) => {
-        if (user) {
-          setShowReservationForm(true);
-          setSelectedService(title);
-          
-        } else {
-            setShowLoginForm(true);
-        }
+    const handleBookNowClick = () => {
+        setShowReservationForm(true);
     }
     
     const handleCloseForm = () => {
         setShowReservationForm(false);
-        setSelectedService("");
-        setShowLoginForm(false);
     };
     
     return (
-        <section className=" mb-2">
+        <section className=" mb-2" id="services">
       <div className="max-w-5xl mx-auto">
         <div className="text-center pt-6">
           <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 inline-block text-transparent bg-clip-text">
@@ -80,14 +67,11 @@ const ServiceCard: React.FC<ServiceProps> = ({ title, image, alt, onClick }) => 
 
         <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-6 mt-4 max-sm:max-w-sm max-sm:mx-auto">
           {services.map((service, index) => (
-            <ServiceCard key={index} {...service} onClick={handleBookNowClick} />
-        ))}
+              <ServiceCard onClick={handleBookNowClick} key={index} {...service} />
+            ))}
         </div>
       </div>
-      {showReservationForm && <ReservationForm onClose={handleCloseForm} defaultService={selectedService} />}
-      {showLoginForm && !user && <LoginForm onClose={handleCloseForm} />}
-  
-      </section>
+      <ReservationForm isOpen={showReservationForm} onClose={handleCloseForm} />
+    </section>
   );
 }
-export default Service;

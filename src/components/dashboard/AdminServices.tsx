@@ -10,20 +10,32 @@ interface Service {
   duration_per_session: string;
 }
 
+interface Branch {
+  id: number;
+  branch_name: string;
+  services: Service[];
+}
+
 const AdminServices: React.FC = () => {
-  const [services, setServices] = useState<Service[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
 
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchBranchesAndServices = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/services");
-        setServices(response.data);
+        const branchesResponse = await axios.get("http://localhost:5000/branches");
+        const branchesWithServices = await Promise.all(
+          branchesResponse.data.map(async (branch: Branch) => {
+            const servicesResponse = await axios.get(`http://localhost:5000/branch-services/${branch.id}`);
+            return { ...branch, services: servicesResponse.data };
+          })
+        );
+        setBranches(branchesWithServices);
       } catch (error) {
-        console.error("Error fetching services:", error);
+        console.error("Error fetching branches and services:", error);
       }
     };
 
-    fetchServices();
+    fetchBranchesAndServices();
   }, []);
 
   const columns = [
@@ -48,7 +60,12 @@ const AdminServices: React.FC = () => {
         </Link>
       </div>
       <Breadcrumb items={breadcrumbItems} />
-      <Table<Service> columns={columns} data={services} />
+      {branches.map((branch) => (
+        <div key={branch.id} className="mb-8">
+          <h3 className="text-xl font-semibold mb-2">{branch.branch_name}</h3>
+          <Table<Service> columns={columns} data={branch.services} />
+        </div>
+      ))}
     </>
   );
 };

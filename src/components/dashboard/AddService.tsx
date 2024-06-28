@@ -1,20 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Breadcrumb from './Breadcrumb';
 import { useAuth } from '../../hooks/useAuth';
 
+interface Branch {
+  id: number;
+  branch_name: string;
+}
+
 const AddService: React.FC = () => {
   const [name, setName] = useState('');
   const [duration, setDuration] = useState('00:30');
+  const [branchId, setBranchId] = useState('');
+  const [branches, setBranches] = useState<Branch[]>([]);
   const navigate = useNavigate();
   const { authAxios } = useAuth();
+
+  useEffect(() => {
+    const fetchBranches = async () => {
+      try {
+        const response = await authAxios.get('http://localhost:5000/branches');
+        setBranches(response.data);
+      } catch (error) {
+        console.error('Error fetching branches:', error);
+      }
+    };
+    fetchBranches();
+  }, [authAxios]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await authAxios.post('http://localhost:5000/services', { 
-        name, 
-        duration_per_session: `${duration}:00` 
+      await authAxios.post('http://localhost:5000/branch-services', { 
+        branch_id: branchId,
+        service_name: name,
+        duration_per_session: duration 
       });
       navigate('/dashboard/services');
     } catch (error) {
@@ -39,6 +59,23 @@ const AddService: React.FC = () => {
               Add New Service
             </h5>
             <div className="space-y-6">
+              <div>
+                <label htmlFor="branch" className="block mb-2 text-sm font-medium text-gray-900">
+                  Branch
+                </label>
+                <select
+                  id="branch"
+                  value={branchId}
+                  onChange={(e) => setBranchId(e.target.value)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  required
+                >
+                  <option value="">Select a branch</option>
+                  {branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
                   Service Name

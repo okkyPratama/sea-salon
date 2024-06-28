@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReservationForm from "./ReservationForm";
 import { useAuth } from "../hooks/useAuth";
 import LoginForm from "./LoginForm";
@@ -21,16 +21,21 @@ const BookNowIcon: React.FC = () => (
 const Hero: React.FC = () => {
   const [showReservationForm, setShowReservationForm] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
-  const {user} = useAuth();
-  
+  const { user } = useAuth();
+
+  useEffect(() => {
+    console.log("User state changed:", user);
+    console.log("showReservationForm:", showReservationForm);
+  }, [user, showReservationForm]);
+
   const handleBookNowClick = () => {
+    console.log("Book Now clicked. User:", user);
     if (user) {
       setShowReservationForm(true);
-      
     } else {
       setShowLoginForm(true);
     }
-  }
+  };
 
   const handleCloseForm = () => {
     setShowReservationForm(false);
@@ -55,15 +60,14 @@ const Hero: React.FC = () => {
             Book Now
             <BookNowIcon />
           </button>
-
         </div>
         <div className="hidden lg:mt-0 lg:col-span-5 lg:flex">
           <img src="/src/assets/sea-salon-model2-bgremove.png" alt="mockup" />
         </div>
       </div>
-      {showReservationForm && <ReservationForm onClose={handleCloseForm} />}
+      {/* Always render ReservationForm, but control visibility with isOpen prop */}
+      <ReservationForm isOpen={showReservationForm} onClose={handleCloseForm} />
       {showLoginForm && !user && <LoginForm onClose={handleCloseForm} />}
-
     </section>
   );
 };
