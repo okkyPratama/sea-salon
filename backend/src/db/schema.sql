@@ -50,3 +50,13 @@ CREATE TABLE reservations(
 	date_time TIMESTAMP NOT NULL,
 	constraint user_id foreign key(user_id) references users(user_id)
 );
+
+CREATE TABLE branch_services (
+	id serial primary key,
+	branch_id INTEGER REFERENCES branch(id),
+	service_id INTEGER REFERENCES services(id),
+	duration_per_session TIME NOT NULL
+);
+
+ALTER TABLE reservations ADD COLUMN branch_id INTEGER REFERENCES branch(id);
+ALTER TABLE reservations ADD COLUMN branch_id INTEGER REFERENCES branch(id);
