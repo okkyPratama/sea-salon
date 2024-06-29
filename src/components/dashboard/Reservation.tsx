@@ -10,6 +10,7 @@ interface Reservation {
   phone_number: string;
   service: string;
   date_time: string;
+  location: string;
 }
 
 const Reservation: React.FC = () => {
@@ -42,6 +43,7 @@ const Reservation: React.FC = () => {
     { header: "Name", accessor: "name" as keyof Reservation },
     { header: "Phone Number", accessor: "phone_number" as keyof Reservation },
     { header: "Service", accessor: "service" as keyof Reservation },
+    {header: "Location", accessor: "branch_name" as keyof Reservation },
     { 
       header: "Date", 
       accessor: "date_time",

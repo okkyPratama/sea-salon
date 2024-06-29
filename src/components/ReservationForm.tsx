@@ -168,7 +168,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
     setIsLoading(true);
 
     try {
-      const response = await authAxios.post("/reservations", {
+      const response = await authAxios.post("http://localhost:5000/reservations", {
         user_id: user.user_id,
         name: formData.name,
         phone_number: formData.phoneNumber,
