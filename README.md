@@ -24,7 +24,7 @@ SEA Salon Reservation System is a full-stack web application designed to manage 
 
 ## Database Schema
 
-https://github.com/okkyPratama/sea-salon/blob/main/erd%20sea_salon.png?raw=true
+![alt text](https://github.com/okkyPratama/sea-salon/blob/main/erd%20sea_salon.png?raw=true)
 
 The application uses the following database tables:
 
