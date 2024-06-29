@@ -87,7 +87,7 @@ npm run dev
 7. Navigate to frontend and start the development server:
 ```
 cd ../
-npm run dev;
+npm run dev
 ```
 
 ## Contact
