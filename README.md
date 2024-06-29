@@ -51,13 +51,13 @@ The application uses the following database tables:
 
 1. Clone the repository:
 ```
-https://github.com/okkyPratama/sea-salon.git
+git clone https://github.com/okkyPratama/sea-salon.git
 ```
 
 2. Install dependencies in frontend:
 ```
 npm install
-``
+```
 
 3. Install dependencies in backend directory:
 ```
@@ -82,8 +82,8 @@ JWT_TOKEN=IGXMO5GDcAUNPuUXh2fAt7X97c1SwgkF8jFNP96jOGo
 6. Start the development server in the backend first:
 ```
 npm run dev
-
 ```
+
 7. Navigate to frontend and start the development server:
 ```
 cd ../
