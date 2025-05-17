@@ -63,7 +63,10 @@ const AdminServices: React.FC = () => {
       {branches.map((branch) => (
         <div key={branch.id} className="mb-8">
           <h3 className="text-xl font-semibold mb-2">{branch.branch_name}</h3>
+          <div className="max-w-5xl">
+
           <Table<Service> columns={columns} data={branch.services} />
+          </div>
         </div>
       ))}
     </>

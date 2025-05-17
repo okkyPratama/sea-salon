@@ -101,7 +101,7 @@ export default function Review(): React.ReactElement {
 
   return (
     <section className="bg-gray-100 py-12">
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="max-w-screen-2xl mx-auto px-4">
         <div className="flex justify-center">
           <h2 className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 inline-block text-transparent bg-clip-text">
             Customer Reviews
@@ -116,12 +116,11 @@ export default function Review(): React.ReactElement {
           />
         )}
 
-        {/* Horizontal scrolling reviews */}
-        <div className="relative mb-12 -mx-4 px-4 overflow-hidden">
+        <div className="relative mb-12 w-full overflow-visible">
           <div className="flex items-center">
             <button
               onClick={() => scroll(-600)}
-              className="p-2 bg-white rounded-full shadow-md z-10 mr-4 flex-shrink-0"
+              className="p-3 bg-white rounded-full shadow-md z-20 mr-4 flex-shrink-0 hover:bg-gray-100 transition-colors"
             >
               <svg
                 className="w-6 h-6"
@@ -138,33 +137,50 @@ export default function Review(): React.ReactElement {
                 />
               </svg>
             </button>
-            <div className="flex-grow overflow-hidden">
-            <div ref={scrollContainerRef} className="flex overflow-x-auto space-x-6 pb-4 hide-scrollbar" style={{ width: "calc(100vw - 5rem)" }}>
-              {reviews.map((review) => (
-                <div key={review.id} className="bg-white p-6 rounded-lg shadow-md flex-shrink-0 w-96">
-                  <div className="flex items-start mb-4">
-                    <div className="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gray-300 flex-shrink-0">
-                      <svg className="w-full h-full text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-lg">{review.customer_name}</h3>
-                      <div className="flex items-center">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <StarIcon key={star} filled={star <= review.rating} onClick={() => {}} />
-                        ))}
+            <div className="w-full overflow-hidden">
+              <div
+                ref={scrollContainerRef}
+                className="flex overflow-x-auto space-x-6 pb-4 hide-scrollbar px-2"
+                style={{ width: "100%" }}
+              >
+                {reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="bg-white p-6 rounded-lg shadow-md flex-shrink-0 w-72 md:w-80 lg:w-96"
+                  >
+                    <div className="flex items-start mb-4">
+                      <div className="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gray-300 flex-shrink-0">
+                        <svg
+                          className="w-full h-full text-gray-500"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-lg">
+                          {review.customer_name}
+                        </h3>
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <StarIcon
+                              key={star}
+                              filled={star <= review.rating}
+                              onClick={() => {}}
+                            />
+                          ))}
+                        </div>
                       </div>
                     </div>
+                    <p className="text-gray-600">{review.comment}</p>
                   </div>
-                  <p className="text-gray-600">{review.comment}</p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
             <button
               onClick={() => scroll(600)}
-              className="p-2 bg-white rounded-full shadow-md z-10 ml-4 flex-shrink-0"
+              className="p-3 bg-white rounded-full shadow-md z-20 ml-4 flex-shrink-0 hover:bg-gray-100 transition-colors"
             >
               <svg
                 className="w-6 h-6"
@@ -184,7 +200,7 @@ export default function Review(): React.ReactElement {
           </div>
         </div>
 
-        {/* Review form */}
+        <div className="px-24">
         <form
           onSubmit={handleSubmit}
           className="mb-12 bg-white p-6 rounded-lg shadow-md"
@@ -247,6 +263,9 @@ export default function Review(): React.ReactElement {
             Submit Review
           </button>
         </form>
+
+
+        </div>
       </div>
     </section>
   );
